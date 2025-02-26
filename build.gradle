@@ -34,3 +34,15 @@ dependencies {
 tasks.withType(Test) {
     useJUnitPlatform()
 }
+
+tasks.register('testApi', Test) {
+    useJUnitPlatform()
+    systemProperty 'cucumber.filter.tags', '@api'
+}
+
+tasks.register('testWeb', Test) {
+    useJUnitPlatform()
+    systemProperty 'cucumber.filter.tags', '@web'
+}
+
+
