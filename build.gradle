@@ -12,6 +12,7 @@ dependencies {
     testImplementation 'io.cucumber:cucumber-java:7.14.0'
     testImplementation 'io.cucumber:cucumber-junit:7.14.0'
     testImplementation 'junit:junit:4.13.2'
+    testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
 
     // Selenium WebDriver
     testImplementation 'org.seleniumhq.selenium:selenium-java:4.10.0'
@@ -42,7 +43,10 @@ tasks.register('testApi', Test) {
 
 tasks.register('testWeb', Test) {
     useJUnitPlatform()
-    systemProperty 'cucumber.filter.tags', '@web'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    systemProperty 'cucumber.options', '--tags @web'
 }
+
 
 
