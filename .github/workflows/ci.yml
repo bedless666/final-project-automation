@@ -1,8 +1,14 @@
 name: Automation Tests
 
 on:
-  workflow_dispatch:  # Memungkinkan manual trigger dari GitHub
-  pull_request:       # Menjalankan test setiap ada Pull Request
+  push:
+    branches:
+      - main  # Sesuaikan jika kamu menggunakan branch lain
+  pull_request:
+    branches:
+      - main
+  workflow_dispatch:  # Untuk manual trigger
+
 
 jobs:
   test:
