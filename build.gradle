@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'io.qameta.allure' version '2.11.2' // Untuk report Allure
 }
 
 repositories {
@@ -7,12 +8,28 @@ repositories {
 }
 
 dependencies {
-    testImplementation 'io.cucumber:cucumber-java:7.11.1'
-    testImplementation 'io.cucumber:cucumber-junit:7.11.1'
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.6.0'
+    // Cucumber
+    testImplementation 'io.cucumber:cucumber-java:7.14.0'
+    testImplementation 'io.cucumber:cucumber-junit:7.14.0'
+
+    // Selenium WebDriver
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.10.0'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+
+    // Rest Assured (API Testing)
     testImplementation 'io.rest-assured:rest-assured:5.3.0'
+
+    // JSON Parser
+    testImplementation 'com.google.code.gson:gson:2.10.1'
+
+    // Assertions
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
+
+    // Cucumber Reporting
+    testImplementation 'net.masterthought:cucumber-reporting:5.7.4'
 }
 
-test {
+tasks.withType(Test) {
     useJUnitPlatform()
 }
