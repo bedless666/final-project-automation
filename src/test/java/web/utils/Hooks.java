@@ -2,25 +2,52 @@ package web.utils;
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
 import io.github.bonigarcia.wdm.WebDriverManager;
+import io.cucumber.java.Before;
+import io.cucumber.java.After;
+import java.time.Duration;
 
 public class Hooks {
-
     private static WebDriver driver;
 
-    public static WebDriver getDriver() {
+    @Before
+    public void setUp() {
         if (driver == null) {
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
+            try {
+                System.out.println("🔧 Setting up ChromeDriver...");
+                WebDriverManager.chromedriver().setup();
+
+                ChromeOptions options = new ChromeOptions();
+                options.addArguments("--start-maximized"); // Maksimalkan jendela
+                options.addArguments("--disable-infobars"); // Hilangkan pop-up info bar
+                options.addArguments("--remote-allow-origins=*"); // Izinkan akses dari sumber eksternal
+
+                driver = new ChromeDriver(options);
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); // Implicit wait
+
+                System.out.println("✅ ChromeDriver successfully initialized.");
+
+            } catch (Exception e) {
+                System.err.println("❌ Error initializing WebDriver: " + e.getMessage());
+                throw new RuntimeException("Failed to initialize WebDriver", e);
+            }
         }
-        return driver;
     }
 
-    public static void closeDriver() {
+    @After
+    public void tearDown() {
         if (driver != null) {
+            System.out.println("🛑 Closing WebDriver...");
             driver.quit();
             driver = null;
         }
     }
 
+    public static WebDriver getDriver() {
+        if (driver == null) {
+            throw new IllegalStateException("❌ WebDriver not initialized. Ensure @Before in Hooks.java is executed.");
+        }
+        return driver;
+    }
 }

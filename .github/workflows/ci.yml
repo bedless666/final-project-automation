@@ -36,6 +36,10 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
+      - name: Set up Google Chrome
+        uses: browser-actions/setup-chrome@v1
+
+
       # Menjalankan API tests
       - name: Run API tests
         run: ./gradlew testApi

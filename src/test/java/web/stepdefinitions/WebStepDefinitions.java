@@ -3,37 +3,23 @@ package web.stepdefinitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
-import io.cucumber.java.Before;
-import io.cucumber.java.After;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
 import web.pages.LoginPage;
 import web.utils.Hooks;
-import java.time.Duration;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
 public class WebStepDefinitions {
-
-    private WebDriver driver;
-    private LoginPage loginPage;
-    private WebDriverWait wait;
-
-    @Before
-    public void setup() {
-        driver = Hooks.getDriver();
-        if (driver == null) {
-            throw new IllegalStateException("WebDriver belum diinisialisasi. Periksa konfigurasi Hooks.getDriver().");
-        }
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        loginPage = new LoginPage(driver);
-    }
+    WebDriver driver;
+    LoginPage loginPage;
 
     @Given("user is on the login page")
     public void user_is_on_the_login_page() {
+        driver = Hooks.getDriver();
         driver.get("https://www.demoblaze.com");
+        loginPage = new LoginPage(driver);
+        loginPage.openLoginModal();
     }
 
     @When("user enters username {string} and password {string}")
@@ -45,62 +31,48 @@ public class WebStepDefinitions {
     @When("user clicks the login button")
     public void user_clicks_login_button() {
         loginPage.clickLogin();
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
-        } catch (Exception e) {
-            System.err.println("Login failed or timeout: " + e.getMessage());
-        }
     }
 
     @Then("user should be redirected to the homepage")
     public void user_should_be_redirected() {
-        assertTrue("User is not redirected to homepage", driver.getCurrentUrl().contains("index"));
+        assertTrue("Username is not displayed after login", loginPage.isUserNameDisplayed());
     }
 
-    @When("user navigates to the cart")
-    public void user_navigates_to_the_cart() {
-        WebElement cartButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("cartur")));
-        cartButton.click();
-    }
-
-    @Then("the cart page should be displayed")
-    public void the_cart_page_should_be_displayed() {
-        assertTrue("Cart page is not displayed", driver.getCurrentUrl().contains("cart"));
+    @Then("an error message should be displayed")
+    public void error_message_should_be_displayed() {
+        String errorMsg = loginPage.getErrorMessage();
+        assertFalse("Error message not displayed", errorMsg.isEmpty());
     }
 
     @Given("user is logged in")
     public void user_is_logged_in() {
+        driver = Hooks.getDriver();
         driver.get("https://www.demoblaze.com");
-        loginPage.enterUsername("testuser");
-        loginPage.enterPassword("password123");
+        loginPage = new LoginPage(driver);
+        loginPage.openLoginModal();
+        loginPage.enterUsername("bedless666");
+        loginPage.enterPassword("jayjay666");
         loginPage.clickLogin();
-        try {
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
-        } catch (Exception e) {
-            System.err.println("Login verification failed: " + e.getMessage());
-        }
+        assertTrue("Login failed, username not displayed.", loginPage.isUserNameDisplayed());
     }
 
-    @When("user clicks the logout button")
-    public void user_clicks_the_logout_button() {
-        WebElement logoutButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("logout2")));
-        logoutButton.click();
+    @When("user navigates to the cart page")
+    public void user_navigates_to_cart_page() {
+        driver.get("https://www.demoblaze.com/cart.html");
     }
 
-    @Then("user should be redirected to the login page")
-    public void user_should_be_redirected_to_the_login_page() {
-        try {
-            WebElement loginButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login2")));
-            assertTrue("Login button is not visible", loginButton.isDisplayed());
-        } catch (Exception e) {
-            System.err.println("Logout verification failed: " + e.getMessage());
-        }
+    @Then("cart page should be displayed")
+    public void cart_page_should_be_displayed() {
+        assertTrue("Cart page not displayed", driver.getCurrentUrl().contains("cart.html"));
     }
 
-    @After
-    public void teardown() {
-        if (driver != null) {
-            driver.quit();
-        }
+    @When("user clicks logout")
+    public void user_clicks_logout() {
+        driver.findElement(By.id("logout2")).click();
+    }
+
+    @Then("user should be logged out")
+    public void user_should_be_logged_out() {
+        assertFalse("Logout failed, user still logged in", loginPage.isUserNameDisplayed());
     }
 }

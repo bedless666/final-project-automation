@@ -1,17 +1,19 @@
 package web.runners;
 
-import org.junit.runner.RunWith;
 import io.cucumber.junit.Cucumber;
 import io.cucumber.junit.CucumberOptions;
-import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.junit.BeforeClass; // Tambahkan import
 
 @RunWith(Cucumber.class)
 @CucumberOptions(
         features = "src/test/resources/features/web",
-        glue = "web.stepdefinitions",
+        glue = {"web.stepdefinitions", "web.utils"}, // Tambahkan "web.utils"
         plugin = {"pretty", "html:target/cucumber-reports.html"}
 )
 public class WebTestRunner {
-    // Tidak perlu anotasi @Test di sini
+    @BeforeClass
+    public static void setup() {
+        System.out.println("WebTestRunner setup called");
+    }
 }
-
