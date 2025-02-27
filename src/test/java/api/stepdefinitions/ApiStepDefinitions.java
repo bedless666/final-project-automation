@@ -1,39 +1,55 @@
-// ApiStepDefinitions.java
 package api.stepdefinitions;
 
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.When;
 import io.cucumber.java.en.Then;
-import static io.restassured.RestAssured.*;
-import static org.hamcrest.Matchers.*;
+import io.restassured.response.Response;
+
+import static io.restassured.RestAssured.given;
+import static org.hamcrest.Matchers.equalTo;
 
 public class ApiStepDefinitions {
 
-    private String baseUrl = "https://dummyapi.io/data/v1/user";
-    private String apiKey = "YOUR_API_KEY";
+    private String baseUrl = "https://jsonplaceholder.typicode.com/users";
+    private Response response;
 
-    @Given("user has an API key")
-    public void user_has_an_api_key() {
-        System.out.println("User API key is set.");
+    @Given("user has access to the API")
+    public void user_has_access_to_the_API() {
+        System.out.println("Using public API, no API key required.");
     }
 
     @When("user sends a request to get user with ID {string}")
     public void user_sends_request_to_get_user(String userId) {
-        given()
-                .header("app-id", apiKey)
+        response = given()
                 .when()
-                .get(baseUrl + "/" + userId)
-                .then()
-                .statusCode(200);
+                .get(baseUrl + "/" + userId);
+    }
+
+    @When("user sends a request to get all users")
+    public void user_sends_request_to_get_all_users() {
+        response = given()
+                .when()
+                .get(baseUrl);
+    }
+
+    @When("user sends a POST request to create a new user")
+    public void user_sends_post_request_to_create_new_user() {
+        response = given()
+                .header("Content-Type", "application/json")
+                .body("{ \"name\": \"New User\", \"email\": \"newuser@example.com\" }")
+                .when()
+                .post(baseUrl);
+    }
+
+    @When("user sends a DELETE request to remove user with ID {string}")
+    public void user_sends_delete_request_to_remove_user(String userId) {
+        response = given()
+                .when()
+                .delete(baseUrl + "/" + userId);
     }
 
     @Then("the response status should be {int}")
     public void the_response_status_should_be(Integer statusCode) {
-        given()
-                .header("app-id", apiKey)
-                .when()
-                .get(baseUrl + "/123")
-                .then()
-                .statusCode(statusCode);
+        response.then().statusCode(statusCode);
     }
 }

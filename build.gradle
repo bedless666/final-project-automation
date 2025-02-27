@@ -8,28 +8,38 @@ repositories {
 }
 
 dependencies {
-    // Cucumber
+    // ✅ Logging
+    testImplementation 'org.slf4j:slf4j-simple:2.0.9'
+
+    // ✅ Cucumber (Gherkin-Based Testing)
     testImplementation 'io.cucumber:cucumber-java:7.14.0'
     testImplementation 'io.cucumber:cucumber-junit:7.14.0'
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
 
-    // Selenium WebDriver
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.10.0'
-    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.2'
+    // ✅ Selenium WebDriver
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.19.1'
+    testImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.19.1'
 
-    // Rest Assured (API Testing)
+    // ✅ WebDriverManager (Fix WebDriver Error)
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
+
+    // ✅ Rest Assured (API Testing)
     testImplementation 'io.rest-assured:rest-assured:5.3.0'
 
-    // JSON Parser
+    // ✅ JSON Parser
     testImplementation 'com.google.code.gson:gson:2.10.1'
 
-    // Assertions
+    // ✅ Assertions
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
     testImplementation 'org.assertj:assertj-core:3.24.2'
 
-    // Cucumber Reporting
+    // ✅ Cucumber Reporting
     testImplementation 'net.masterthought:cucumber-reporting:5.7.4'
+
+    // ✅ Allure Report
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
+    testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
 }
 
 tasks.withType(Test) {
@@ -45,8 +55,11 @@ tasks.register('testWeb', Test) {
     useJUnitPlatform()
     testClassesDirs = sourceSets.test.output.classesDirs
     classpath = sourceSets.test.runtimeClasspath
-    systemProperty 'cucumber.options', '--tags @web'
+    systemProperty 'cucumber.filter.tags', '@web'
 }
 
-
-
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
+    }
+}
