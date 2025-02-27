@@ -1,3 +1,4 @@
+@api
 Feature: API Testing with JSONPlaceholder
 
   Scenario: Get user by valid ID

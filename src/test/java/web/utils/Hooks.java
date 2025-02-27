@@ -1,34 +1,26 @@
 package web.utils;
 
-import io.cucumber.java.After;
-import io.cucumber.java.Before;
-import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
+import io.github.bonigarcia.wdm.WebDriverManager;
 
 public class Hooks {
-    public static WebDriver driver;
 
-    @Before
-    public void setUp() {
-        try {
-            // ✅ Menggunakan WebDriverManager untuk setup ChromeDriver
-            WebDriverManager.chromedriver().setup();
-            driver = new ChromeDriver();
-            driver.manage().window().maximize();
-        } catch (Exception e) {
-            throw new IllegalStateException("Gagal menginisialisasi WebDriver: " + e.getMessage(), e);
-        }
-    }
-
-    @After
-    public void tearDown() {
-        if (driver != null) {
-            driver.quit();
-        }
-    }
+    private static WebDriver driver;
 
     public static WebDriver getDriver() {
+        if (driver == null) {
+            WebDriverManager.chromedriver().setup();
+            driver = new ChromeDriver();
+        }
         return driver;
     }
+
+    public static void closeDriver() {
+        if (driver != null) {
+            driver.quit();
+            driver = null;
+        }
+    }
+
 }

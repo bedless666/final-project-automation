@@ -11,10 +11,7 @@ import org.junit.jupiter.api.Test;
         glue = "web.stepdefinitions",
         plugin = {"pretty", "html:target/cucumber-reports.html"}
 )
-
 public class WebTestRunner {
-    @Test
-    public void sampleTest() {
-        System.out.println("Test executed!");
-    }
+    // Tidak perlu anotasi @Test di sini
 }
+

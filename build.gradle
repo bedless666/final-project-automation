@@ -48,18 +48,45 @@ tasks.withType(Test) {
 
 tasks.register('testApi', Test) {
     useJUnitPlatform()
-    systemProperty 'cucumber.filter.tags', '@api'
+    systemProperty 'cucumber.filter.tags', '@api'  // Menggunakan tag @api untuk API tests
+    testLogging {
+        events "started", "passed", "failed"
+    }
 }
 
 tasks.register('testWeb', Test) {
     useJUnitPlatform()
-    testClassesDirs = sourceSets.test.output.classesDirs
-    classpath = sourceSets.test.runtimeClasspath
-    systemProperty 'cucumber.filter.tags', '@web'
+    systemProperty 'cucumber.filter.tags', '@web'  // Menggunakan tag @web untuk Web UI tests
+    testLogging {
+        events "started", "passed", "failed"
+    }
+}
+
+tasks.test {
+    useJUnitPlatform()
+
+    // Konfigurasi laporan XML dan HTML
+    reports {
+        junitXml.required.set(true)  // Mengaktifkan laporan XML
+        junitXml.destination = file("${buildDir}/reports/tests/test")  // Menentukan lokasi laporan XML
+
+        html.required.set(true)  // Mengaktifkan laporan HTML
+        html.destination = file("${buildDir}/reports/tests/test")  // Menentukan lokasi laporan HTML
+    }
+
+    testLogging {
+        events "started", "passed", "failed"  // Mencatat event tes yang dijalankan
+    }
 }
 
 java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(17))
     }
+}
+
+allure {
+    version = '2.24.0'
+    autoconfigure = true
+    aspectjweaver = true
 }

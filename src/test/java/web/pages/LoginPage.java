@@ -16,6 +16,8 @@ public class LoginPage {
     private By usernameField = By.id("loginusername");
     private By passwordField = By.id("loginpassword");
     private By loginButton = By.xpath("//button[text()='Log in']");
+    private By errorMessage = By.id("loginerror"); // Contoh error message locator
+    private By userNameDisplayed = By.id("nameofuser");
 
     // Actions
     public void enterUsername(String username) {
@@ -28,5 +30,13 @@ public class LoginPage {
 
     public void clickLogin() {
         driver.findElement(loginButton).click();
+    }
+
+    public String getErrorMessage() {
+        return driver.findElement(errorMessage).getText();
+    }
+
+    public boolean isUserNameDisplayed() {
+        return driver.findElement(userNameDisplayed).isDisplayed();
     }
 }

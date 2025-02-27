@@ -1,3 +1,4 @@
+@web
 Feature: User Login on DemoBlaze
 
   Scenario: Successful login
