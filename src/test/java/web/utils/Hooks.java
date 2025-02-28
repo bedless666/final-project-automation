@@ -15,33 +15,26 @@ public class Hooks {
     public void setUp() {
         if (driver == null) {
             try {
-                System.out.println("🔧 Setting up ChromeDriver...");
-                WebDriverManager.chromedriver().setup();
+                System.out.println("🔧 Setting up ChromeDriver using WebDriverManager...");
+                WebDriverManager.chromedriver().setup();  // WebDriverManager menangani versi ChromeDriver
 
                 ChromeOptions options = new ChromeOptions();
-                options.addArguments("--start-maximized"); // Maksimalkan jendela
-                options.addArguments("--disable-infobars"); // Hilangkan pop-up info bar
-                options.addArguments("--remote-allow-origins=*"); // Izinkan akses dari sumber eksternal
-
-                // Menjalankan mode headless jika di environment CI
-                if (System.getenv("CI") != null) {
-                    System.out.println("🌐 Running in CI mode, enabling headless mode...");
-                    options.addArguments("--headless"); // Mode headless agar bisa berjalan tanpa UI
-                    options.addArguments("--no-sandbox");
-                    options.addArguments("--disable-dev-shm-usage"); // Menghindari error memori di Linux
-                }
+                options.addArguments("--headless"); // Untuk CI/CD, jalankan Chrome dalam mode headless
+                options.addArguments("--disable-gpu");
+                options.addArguments("--no-sandbox");
+                options.addArguments("--disable-dev-shm-usage");
 
                 driver = new ChromeDriver(options);
-                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); // Implicit wait
+                driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
                 System.out.println("✅ ChromeDriver successfully initialized.");
-
             } catch (Exception e) {
                 System.err.println("❌ Error initializing WebDriver: " + e.getMessage());
                 throw new RuntimeException("Failed to initialize WebDriver", e);
             }
         }
     }
+
 
     @After
     public void tearDown() {
