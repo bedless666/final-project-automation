@@ -18,13 +18,13 @@ Feature: User Login on DemoBlaze
     When user enters username "bedless666" and password "jayjay666"
     And user clicks the login button
     Then user should be redirected to the homepage
-    When user navigates to the cart
+    When user navigates to the cart page
     Then the cart page should be displayed
 
   Scenario: Logout after login
     Given user is logged in
-    When user clicks the logout button
-    Then user should be redirected to the login page
+    When user clicks logout
+    Then user should be logged out
 
   Scenario: Attempt login without entering credentials
     Given user is on the login page
