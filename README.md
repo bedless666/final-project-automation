@@ -83,7 +83,3 @@ File konfigurasi berada di **`.github/workflows/ci.yml`**.
 
 Proyek ini dibuat untuk tujuan pembelajaran dan pengembangan keterampilan dalam pengujian otomatis.
 
----
-
-🎯 **Sekarang framework ini siap digunakan!** 🚀
-
