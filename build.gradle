@@ -1,5 +1,5 @@
 plugins {
-    id 'java'
+    id 'java-library'
     id 'io.qameta.allure' version '2.11.2' // Untuk report Allure
     id 'com.github.ben-manes.versions' version '0.46.0'
 }
@@ -19,88 +19,65 @@ dependencies {
     testImplementation 'org.junit.vintage:junit-vintage-engine:5.10.0'
 
     // ✅ Selenium WebDriver
-    testImplementation 'org.seleniumhq.selenium:selenium-java:4.14.0'
+    testImplementation 'org.seleniumhq.selenium:selenium-java:4.19.1'
     testImplementation 'org.seleniumhq.selenium:selenium-chrome-driver:4.19.1'
-    implementation 'org.seleniumhq.selenium:selenium-java:4.0.0'
 
     // ✅ WebDriverManager (Fix WebDriver Error)
-    dependencies {
-        testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
+    testImplementation 'io.github.bonigarcia:webdrivermanager:5.6.3'
 
-        // Cek apakah ada versi terbaru yang mengatasi CVE ini
+    // ✅ Rest Assured (API Testing)
+    testImplementation 'io.rest-assured:rest-assured:5.4.0'
 
+    // ✅ JSON Parser
+    testImplementation 'com.google.code.gson:gson:2.10.1'
 
-        // ✅ Rest Assured (API Testing)
-        testImplementation 'io.rest-assured:rest-assured:5.4.0' // Cek versi terbaru dari Rest Assured
-        testImplementation 'commons-codec:commons-codec:1.15'  // Versi terbaru yang aman
+    // ✅ Assertions
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testImplementation 'org.assertj:assertj-core:3.24.2'
 
+    // ✅ Cucumber Reporting
+    testImplementation 'net.masterthought:cucumber-reporting:5.7.4'
 
-        // ✅ JSON Parser
-        testImplementation 'com.google.code.gson:gson:2.10.1'
+    // ✅ Allure Report
+    testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
+    testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
+}
 
-        // ✅ Assertions
-        testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
-        testImplementation 'org.assertj:assertj-core:3.24.2'
-
-        // ✅ Cucumber Reporting
-        testImplementation 'net.masterthought:cucumber-reporting:5.7.4'
-
-        // ✅ Allure Report
-        testImplementation 'io.qameta.allure:allure-cucumber7-jvm:2.24.0'
-        testImplementation 'io.qameta.allure:allure-junit5:2.24.0'
+tasks.withType(Test) {
+    useJUnitPlatform()
+    testLogging {
+        events "started", "passed", "failed"
     }
+}
 
-    tasks.withType(Test) {
-        useJUnitPlatform()
+tasks.register('testApi', Test) {
+    useJUnitPlatform()
+    systemProperty 'cucumber.filter.tags', '@api'
+    testLogging {
+        events "started", "passed", "failed"
     }
+}
 
-    tasks.register('testApi', Test) {
-        useJUnitPlatform()
-        systemProperty 'cucumber.filter.tags', '@api'  // Menggunakan tag @api untuk API tests
-        testLogging {
-            events "started", "passed", "failed"
-        }
+tasks.register('testWeb', Test) {
+    useJUnitPlatform()
+    systemProperty 'cucumber.filter.tags', '@web'
+    testLogging {
+        events "started", "passed", "failed"
     }
+}
 
-    tasks.register('testWeb', Test) {
-        useJUnitPlatform()
-        systemProperty 'cucumber.filter.tags', '@web'  // Menggunakan tag @web untuk Web UI tests
-        testLogging {
-            events "started", "passed", "failed"
-        }
+java {
+    toolchain {
+        languageVersion.set(JavaLanguageVersion.of(17))
     }
+}
 
-    tasks.test {
-        useJUnitPlatform()
+allure {
+    version = '2.24.0'
+    autoconfigure = true
+    aspectjweaver = true
+}
 
-        // Konfigurasi laporan XML dan HTML
-        reports {
-            junitXml.required.set(true)  // Mengaktifkan laporan XML
-            junitXml.destination = file("${buildDir}/reports/tests/test")  // Menentukan lokasi laporan XML
-
-            html.required.set(true)  // Mengaktifkan laporan HTML
-            html.destination = file("${buildDir}/reports/tests/test")  // Menentukan lokasi laporan HTML
-        }
-
-        testLogging {
-            events "started", "passed", "failed"  // Mencatat event tes yang dijalankan
-        }
-    }
-
-    java {
-        toolchain {
-            languageVersion.set(JavaLanguageVersion.of(17))
-        }
-    }
-
-    allure {
-        version = '2.24.0'
-        autoconfigure = true
-        aspectjweaver = true
-    }
-
-    dependencyLocking {
-        lockAllConfigurations()
-    }
-
+dependencyLocking {
+    lockAllConfigurations()
 }

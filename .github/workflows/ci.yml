@@ -3,11 +3,11 @@ name: Automation Tests
 on:
   push:
     branches:
-      - main  # Sesuaikan jika kamu menggunakan branch lain
+      - main
   pull_request:
     branches:
       - main
-  workflow_dispatch:  # Untuk manual trigger
+  workflow_dispatch:
 
 jobs:
   test:
@@ -36,19 +36,35 @@ jobs:
       - name: Grant execute permission for Gradle
         run: chmod +x gradlew
 
-      - name: Set up Google Chrome
-        uses: browser-actions/setup-chrome@v1
+      - name: Install Google Chrome
+        run: |
+          sudo apt update
+          sudo apt install -y google-chrome-stable
+          google-chrome --version
 
+      - name: Install ChromeDriver
+        run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+')
+          DRIVER_VERSION=$(curl -sS "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          wget -N "https://chromedriver.storage.googleapis.com/$DRIVER_VERSION/chromedriver_linux64.zip" -P ~/
+          unzip ~/chromedriver_linux64.zip -d ~/
+          sudo mv -f ~/chromedriver /usr/local/bin/chromedriver
+          sudo chmod +x /usr/local/bin/chromedriver
+          chromedriver --version
 
-      # Menjalankan API tests
+      - name: Debug Chrome & ChromeDriver
+        run: |
+          which google-chrome
+          which chromedriver
+          google-chrome --version
+          chromedriver --version
+
       - name: Run API tests
         run: ./gradlew testApi
 
-      # Menjalankan Web UI tests
       - name: Run Web UI tests
         run: ./gradlew testWeb
 
-      # Upload test reports as artifacts
       - name: Upload Test Reports
         uses: actions/upload-artifact@v4
         with:

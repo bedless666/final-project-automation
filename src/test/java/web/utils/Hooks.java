@@ -23,6 +23,14 @@ public class Hooks {
                 options.addArguments("--disable-infobars"); // Hilangkan pop-up info bar
                 options.addArguments("--remote-allow-origins=*"); // Izinkan akses dari sumber eksternal
 
+                // Menjalankan mode headless jika di environment CI
+                if (System.getenv("CI") != null) {
+                    System.out.println("🌐 Running in CI mode, enabling headless mode...");
+                    options.addArguments("--headless"); // Mode headless agar bisa berjalan tanpa UI
+                    options.addArguments("--no-sandbox");
+                    options.addArguments("--disable-dev-shm-usage"); // Menghindari error memori di Linux
+                }
+
                 driver = new ChromeDriver(options);
                 driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10)); // Implicit wait
 
