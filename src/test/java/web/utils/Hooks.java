@@ -19,7 +19,7 @@ public class Hooks {
                 WebDriverManager.chromedriver().setup();  // WebDriverManager menangani versi ChromeDriver
 
                 ChromeOptions options = new ChromeOptions();
-                options.addArguments("--headless"); // Untuk CI/CD, jalankan Chrome dalam mode headless
+                options.addArguments("--headless"); // Mode headless untuk CI/CD
                 options.addArguments("--disable-gpu");
                 options.addArguments("--no-sandbox");
                 options.addArguments("--disable-dev-shm-usage");
@@ -34,7 +34,6 @@ public class Hooks {
             }
         }
     }
-
 
     @After
     public void tearDown() {
