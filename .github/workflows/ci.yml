@@ -74,14 +74,6 @@ jobs:
           path: build/reports/cucumber/testapi/cucumber-api.html
           retention-days: 7
 
-      # ✅ Upload Report Cucumber untuk Semua Test
-      - name: Upload Cucumber Report (General)
-        uses: actions/upload-artifact@v4
-        with:
-          name: cucumber-report-all
-          path: build/reports/cucumber/cucumber-test.html
-          retention-days: 7
-
       # ✅ Upload Semua Report Test (JUnit & Cucumber)
       - name: Upload Test Reports
         uses: actions/upload-artifact@v4
