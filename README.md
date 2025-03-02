@@ -1,85 +1,138 @@
-# Final Project Automation
+# 🚀 Automation Test Framework
 
-**📌 Deskripsi Proyek**
+## 📌 Overview
 
-Final Project Automation adalah framework pengujian otomatis yang menggabungkan **Web UI Testing** dan **API Testing** dalam satu repository. Framework ini menggunakan **Java, Gradle, Cucumber, Selenium, dan Rest Assured**, serta mendukung eksekusi test otomatis melalui **GitHub Actions**.
+Repository ini merupakan **Automation Test Framework** yang mengintegrasikan **Web UI Testing** dan **API Testing** dalam satu proyek. Framework ini dibangun menggunakan **Java**, **Gradle**, **Cucumber**, **Selenium**, dan **Rest Assured**, serta didukung oleh **GitHub Actions** untuk menjalankan pengujian secara otomatis.
 
-**📂 Struktur Folder**
+## 📂 Project Structure
 
-```bash
-final-project-automation/
-│── src/
-│   ├── test/
-│   │   ├── java/
-│   │   │   ├── api/          # Folder untuk API testing
-│   │   │   │   ├── stepdefinitions/  # Step definitions untuk API
-│   │   │   │   ├── runners/          # Runner untuk API test
-│   │   │   │   ├── utils/            # Utils/helper untuk API
-│   │   │   ├── web/          # Folder untuk Web UI testing
-│   │   │   │   ├── stepdefinitions/  # Step definitions untuk Web UI
-│   │   │   │   ├── pages/            # Page Object Model (POM) untuk Web UI
-│   │   │   │   ├── runners/          # Runner untuk Web UI test
-│   │   │   │   ├── utils/            # Utils/helper untuk Web UI
-│   │   ├── resources/
-│   │   │   ├── features/      # Folder untuk feature files (Gherkin)
-│   │   │   │   ├── api/       # Feature files untuk API
-│   │   │   │   ├── web/       # Feature files untuk Web UI
-│── .github/workflows/ci.yml   # GitHub Actions workflow
-│── build.gradle               # Konfigurasi Gradle
-│── README.md                  # Dokumentasi project
-│── .gitignore                  # File yang perlu di-ignore oleh Git
+```
+src
+├── main
+│   ├── java
+│   │   ├── com/automation/Main.java
+├── test
+│   ├── java
+│   │   ├── api
+│   │   │   ├── runners/ApiTestRunner.java
+│   │   │   ├── stepdefinitions/ApiStepDefinitions.java
+│   │   ├── web
+│   │   │   ├── pages/CartPage.java
+│   │   │   ├── pages/LoginPage.java
+│   │   │   ├── runners/WebTestRunner.java
+│   │   │   ├── stepdefinitions/CartStepDefinitions.java
+│   │   │   ├── stepdefinitions/LoginStepDefinitions.java
+│   │   │   ├── utils/Hooks.java
+│   │   ├── TestChrome.java
+│   ├── resources
+│   │   ├── features
+│   │   │   ├── api/sample.feature
+│   │   │   ├── web/login.feature
+│
+build.gradle
+ci.yml
+README.md
 ```
 
-**🚀 Cara Menjalankan Test**
+## 🛠️ Tools & Libraries
 
-**1. Clone Repository**
+- **Java 17** - Bahasa pemrograman utama
+- **Gradle** - Build automation tool
+- **Cucumber** - Gherkin-based testing framework
+- **Selenium WebDriver** - Web UI automation
+- **Rest Assured** - API testing
+- **Allure & Cucumber Reports** - Test reporting
+- **GitHub Actions** - CI/CD automation
 
-```bash
-git clone https://github.com/username/final-project-automation.git
-cd final-project-automation
+## 🚀 Installation & Setup
+
+### **1️⃣ Clone Repository**
+
+```sh
+git clone https://github.com/username/repository.git
+cd repository
 ```
 
-**2. Jalankan API Test**
+### **2️⃣ Install Dependencies**
 
-```bash
+```sh
+./gradlew clean build
+```
+
+### **3️⃣ Menjalankan Test Secara Lokal**
+
+#### **Menjalankan Test keseluruhuan**
+
+```sh
+./gradlew test
+```
+
+#### **Menjalankan API Test**
+
+```sh
 ./gradlew testApi
 ```
 
-**3. Jalankan Web UI Test**
+#### **Menjalankan Web UI Test**
 
-```bash
+```sh
 ./gradlew testWeb
 ```
 
-**4. Melihat Hasil Report**
+## ✅ Test Execution
 
-Setelah test selesai, hasil laporan dapat ditemukan di:
+### **Menjalankan Test di GitHub Actions**
 
-```bash
-build/reports/tests/testApi/index.html
-build/reports/tests/testWeb/index.html
-```
+Framework ini sudah terintegrasi dengan **GitHub Actions**. Test akan berjalan otomatis ketika:
 
-**🔄 Integrasi GitHub Actions**
+- Ada **push ke branch **``
+- Ada **pull request ke **``
+- Dijalankan secara manual melalui **workflow dispatch**
 
-Workflow otomatis dijalankan pada:
+#### **Melihat Hasil Test**
 
-- **Push ke branch ****`main`**
-- **Pull Request ke ****`main`**
-- **Manual Trigger dari tab Actions**
+1. Buka tab **Actions** di repository GitHub
+2. Pilih workflow yang dijalankan
+3. Download laporan dari **Artifacts**
 
-File konfigurasi berada di **`.github/workflows/ci.yml`**.
+## 📊 Reporting
 
-**📦 Dependencies**
+- **Cucumber Report** tersedia dalam format **HTML** dan **JSON**
+- Report otomatis diunggah ke **GitHub Actions Artifacts** setelah test selesai
+- Report bisa ditemukan di:
+    - `build/reports/cucumber/cucumber-test.html`
+    - `build/reports/cucumber/testapi/cucumber-api.html`
+    - `build/reports/cucumber/testweb/cucumber-web.html`
 
-- **Java 17**
-- **Gradle**
-- **Cucumber (cucumber-java, cucumber-junit)**
-- **Selenium (selenium-java, webdriver-manager)**
-- **Rest Assured (API Testing)**
-- **JUnit 4**
+## 🖥️ Web UI Test Scenarios
 
-**📄 Lisensi**
+✅ **Website yang diuji:** [DemoBlaze](https://www.demoblaze.com/)
 
-Proyek ini dibuat untuk tujuan pembelajaran dan pengembangan keterampilan dalam pengujian otomatis.
+| Scenario                                 | Type       |
+| ---------------------------------------- | ---------- |
+| Login dengan kredensial benar            | Positive   |
+| Login dengan kredensial salah            | Negative   |
+| Login tanpa memasukkan username/password | Negative   |
+| End-to-End login dan navigasi ke cart    | End-to-End |
+| Logout setelah login                     | Positive   |
+
+## 🔗 API Test Scenarios
+
+✅ **API yang diuji:** [DummyAPI](https://dummyapi.io/docs/)
+
+| Endpoint       | Method | Scenario                       |
+| -------------- | ------ | ------------------------------ |
+| `/user/{id}`   | GET    | Ambil data user berdasarkan ID |
+| `/user/create` | POST   | Buat user baru                 |
+| `/user/{id}`   | PUT    | Update data user               |
+| `/user/{id}`   | DELETE | Hapus user                     |
+| `/tag`         | GET    | Ambil daftar tag               |
+
+## 👥 Contributors
+
+- **Bharata Aryaseta** ([GitHub Profile](https://github.com/bedless666/))
+
+---
+
+🎯 **Framework ini dibuat sebagai bagian dari Final Project Jayjay. 🚀**
 

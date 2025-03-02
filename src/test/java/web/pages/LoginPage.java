@@ -1,8 +1,6 @@
 package web.pages;
 
-import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.time.Duration;
@@ -15,9 +13,9 @@ public class LoginPage {
     private By usernameField = By.id("loginusername");
     private By passwordField = By.id("loginpassword");
     private By loginButton = By.xpath("//button[text()='Log in']");
-    private By closeButton = By.xpath("//button[@class='close']");
     private By loggedInUser = By.id("nameofuser");
-    private By errorMessage = By.xpath("//div[contains(text(),'Wrong password.') or contains(text(),'User does not exist.')]"); // Sesuaikan jika ada pesan lain
+    private By logoutButton = By.id("logout2");
+    private By errorMessage = By.xpath("//div[contains(text(),'Wrong password')]|//div[contains(text(),'User does not exist.')]|//div[contains(text(),'Please fill out Username and Password.')]");
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -26,7 +24,8 @@ public class LoginPage {
 
     public void openLoginModal() {
         WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(loginNavButton));
-        loginBtn.click();
+        scrollToElement(loginBtn);
+        safeClick(loginBtn);
         wait.until(ExpectedConditions.visibilityOfElementLocated(usernameField));
     }
 
@@ -44,10 +43,12 @@ public class LoginPage {
 
     public void clickLogin() {
         WebElement loginBtn = wait.until(ExpectedConditions.elementToBeClickable(loginButton));
-        loginBtn.click();
+        scrollToElement(loginBtn);
+        closePopupIfExists();
+        safeClick(loginBtn);
     }
 
-    public boolean isUserNameDisplayed() {
+    public boolean isUserLoggedIn() {
         try {
             return wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInUser)).isDisplayed();
         } catch (Exception e) {
@@ -55,12 +56,48 @@ public class LoginPage {
         }
     }
 
-    public String getErrorMessage() {
+    public boolean isUserNameDisplayed() {
         try {
-            WebElement errorMsg = wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage));
-            return errorMsg.getText();
-        } catch (Exception e) {
-            return "";
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInUser)).isDisplayed();
+        } catch (NoSuchElementException | TimeoutException e) {
+            return false;
+        }
+    }
+
+    public boolean isErrorMessageDisplayed() {
+        try {
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).isDisplayed();
+        } catch (NoSuchElementException | TimeoutException e) {
+            return false;
+        }
+    }
+
+    public void clickLogout() {
+        WebElement logoutBtn = wait.until(ExpectedConditions.elementToBeClickable(logoutButton));
+        scrollToElement(logoutBtn);
+        safeClick(logoutBtn);
+        wait.until(ExpectedConditions.elementToBeClickable(loginNavButton)); // Pastikan logout sukses
+    }
+
+    private void scrollToElement(WebElement element) {
+        ((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", element);
+    }
+
+    private void safeClick(WebElement element) {
+        try {
+            element.click();
+        } catch (ElementClickInterceptedException e) {
+            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", element);
+        }
+    }
+
+    private void closePopupIfExists() {
+        try {
+            WebElement popupClose = driver.findElement(By.xpath("//button[contains(@class, 'close')]"));
+            if (popupClose.isDisplayed()) {
+                popupClose.click();
+            }
+        } catch (NoSuchElementException ignored) {
         }
     }
 }

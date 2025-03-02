@@ -55,8 +55,37 @@ jobs:
       - name: Run Web UI tests
         run: ./gradlew testWeb
 
+      - name: Run General Tests
+        run: ./gradlew test
+
+      # ✅ Upload Report Cucumber untuk Web Testing
+      - name: Upload Cucumber Report (Web)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-web
+          path: build/reports/cucumber/testweb/cucumber-web.html
+          retention-days: 7
+
+      # ✅ Upload Report Cucumber untuk API Testing
+      - name: Upload Cucumber Report (API)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-api
+          path: build/reports/cucumber/testapi/cucumber-api.html
+          retention-days: 7
+
+      # ✅ Upload Report Cucumber untuk Semua Test
+      - name: Upload Cucumber Report (General)
+        uses: actions/upload-artifact@v4
+        with:
+          name: cucumber-report-all
+          path: build/reports/cucumber/cucumber-test.html
+          retention-days: 7
+
+      # ✅ Upload Semua Report Test (JUnit & Cucumber)
       - name: Upload Test Reports
         uses: actions/upload-artifact@v4
         with:
           name: test-reports
           path: build/reports/tests
+          retention-days: 7
