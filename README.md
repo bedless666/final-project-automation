@@ -100,7 +100,6 @@ Framework ini sudah terintegrasi dengan **GitHub Actions**. Test akan berjalan o
 - **Cucumber Report** tersedia dalam format **HTML** dan **JSON**
 - Report otomatis diunggah ke **GitHub Actions Artifacts** setelah test selesai
 - Report bisa ditemukan di:
-    - `build/reports/cucumber/cucumber-test.html`
     - `build/reports/cucumber/testapi/cucumber-api.html`
     - `build/reports/cucumber/testweb/cucumber-web.html`
 
@@ -109,11 +108,11 @@ Framework ini sudah terintegrasi dengan **GitHub Actions**. Test akan berjalan o
 ✅ **Website yang diuji:** [DemoBlaze](https://www.demoblaze.com/)
 
 | Scenario                                 | Type       |
-| ---------------------------------------- | ---------- |
+|------------------------------------------| ---------- |
 | Login dengan kredensial benar            | Positive   |
 | Login dengan kredensial salah            | Negative   |
 | Login tanpa memasukkan username/password | Negative   |
-| End-to-End login dan navigasi ke cart    | End-to-End |
+| End-to-End login dan checkout            | End-to-End |
 | Logout setelah login                     | Positive   |
 
 ## 🔗 API Test Scenarios

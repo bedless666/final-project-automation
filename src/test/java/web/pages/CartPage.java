@@ -11,6 +11,12 @@ public class CartPage {
     private WebDriverWait wait;
 
     private By cartButton = By.id("cartur");
+    private By placeOrderButton = By.xpath("//button[contains(text(),'Place Order')]");
+    private By nameField = By.id("name");
+    private By countryField = By.id("country");
+    private By creditCardField = By.id("card");
+    private By purchaseButton = By.xpath("//button[contains(text(),'Purchase')]");
+    private By confirmationMessage = By.xpath("//h2[contains(text(),'Thank you for your purchase!')]");
 
     public CartPage(WebDriver driver) {
         this.driver = driver;
@@ -23,5 +29,23 @@ public class CartPage {
 
     public boolean isCartPageDisplayed() {
         return wait.until(ExpectedConditions.urlContains("cart.html"));
+    }
+
+    public void clickPlaceOrder() {
+        wait.until(ExpectedConditions.elementToBeClickable(placeOrderButton)).click();
+    }
+
+    public void enterCheckoutDetails(String name, String country, String card) {
+        wait.until(ExpectedConditions.visibilityOfElementLocated(nameField)).sendKeys(name);
+        driver.findElement(countryField).sendKeys(country);
+        driver.findElement(creditCardField).sendKeys(card);
+    }
+
+    public void confirmPurchase() {
+        wait.until(ExpectedConditions.elementToBeClickable(purchaseButton)).click();
+    }
+
+    public boolean isConfirmationDisplayed() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(confirmationMessage)).isDisplayed();
     }
 }
