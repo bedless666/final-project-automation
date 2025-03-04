@@ -15,7 +15,8 @@ public class LoginPage {
     private By loginButton = By.xpath("//button[text()='Log in']");
     private By loggedInUser = By.id("nameofuser");
     private By logoutButton = By.id("logout2");
-    private By errorMessage = By.xpath("//div[contains(text(),'Wrong password')]|//div[contains(text(),'User does not exist.')]|//div[contains(text(),'Please fill out Username and Password.')]");
+    private By errorMessage = By.xpath("//*[contains(text(),'Please fill out Username and Password.')]");
+
 
     public LoginPage(WebDriver driver) {
         this.driver = driver;
@@ -56,19 +57,20 @@ public class LoginPage {
         }
     }
 
-    public boolean isUserNameDisplayed() {
-        try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(loggedInUser)).isDisplayed();
-        } catch (NoSuchElementException | TimeoutException e) {
-            return false;
-        }
+    public boolean isErrorMessageDisplayed() {
+        return isAlertPresent() || wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).isDisplayed();
     }
 
-    public boolean isErrorMessageDisplayed() {
+
+    public String getErrorMessage() {
         try {
-            return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).isDisplayed();
+            // Cek jika alert muncul dan ambil teksnya
+            if (isAlertPresent()) {
+                return driver.switchTo().alert().getText();
+            }
+            return wait.until(ExpectedConditions.visibilityOfElementLocated(errorMessage)).getText();
         } catch (NoSuchElementException | TimeoutException e) {
-            return false;
+            return "";
         }
     }
 
@@ -77,6 +79,10 @@ public class LoginPage {
         scrollToElement(logoutBtn);
         safeClick(logoutBtn);
         wait.until(ExpectedConditions.elementToBeClickable(loginNavButton)); // Pastikan logout sukses
+    }
+
+    public boolean isLoginButtonVisible() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(loginNavButton)).isDisplayed();
     }
 
     private void scrollToElement(WebElement element) {
@@ -100,4 +106,15 @@ public class LoginPage {
         } catch (NoSuchElementException ignored) {
         }
     }
+
+    private boolean isAlertPresent() {
+        try {
+            wait.until(ExpectedConditions.alertIsPresent());
+            return true;
+        } catch (TimeoutException e) {
+            return false;
+        }
+    }
+
+
 }

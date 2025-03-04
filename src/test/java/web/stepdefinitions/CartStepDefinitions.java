@@ -1,80 +1,53 @@
 package web.stepdefinitions;
 
 import io.cucumber.java.en.*;
-import org.openqa.selenium.*;
-import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.junit.Assert;
+import org.openqa.selenium.WebDriver;
+import web.pages.CartPage;
+import web.pages.ProductPage;
 import web.utils.Hooks;
-import java.time.Duration;
-import static org.junit.Assert.assertTrue;
 
 public class CartStepDefinitions {
-    WebDriver driver;
-    WebDriverWait wait;
+    private WebDriver driver;
+    private CartPage cartPage;
+    private ProductPage productPage;
 
     public CartStepDefinitions() {
-        driver = Hooks.getDriver();
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+        this.driver = Hooks.getDriver();
+        this.cartPage = new CartPage(driver);
+        this.productPage = new ProductPage(driver);
+    }
+
+    @When("user adds an item to the cart")
+    public void user_adds_item_to_cart() {
+        productPage.openFirstProduct();
+        productPage.addToCart();
+        productPage.acceptAlertIfExists();
     }
 
     @When("user navigates to the cart page")
     public void user_navigates_to_cart_page() {
-        WebElement cartButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("cartur")));
-
-        try {
-            cartButton.click();
-        } catch (ElementClickInterceptedException e) {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", cartButton);
-        }
+        cartPage.openCartPage();
     }
 
     @Then("the cart page should be displayed")
-    public void the_cart_page_should_be_displayed() {
-        wait.until(ExpectedConditions.urlContains("cart.html"));
-        assertTrue("Cart page not displayed", driver.getCurrentUrl().contains("cart.html"));
-    }
-
-    @When("user adds an item to the cart")
-    public void user_adds_an_item_to_the_cart() {
-        WebElement firstItem = driver.findElement(By.cssSelector(".card-title a"));
-        firstItem.click(); // Klik item pertama
-
-        WebElement addToCartButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[contains(text(),'Add to cart')]")));
-        addToCartButton.click(); // Klik tombol "Add to cart"
-
-        // Tunggu alert muncul dan diterima
-        wait.until(ExpectedConditions.alertIsPresent()).accept();
-
-        // Kembali ke halaman utama
-        driver.navigate().to("https://www.demoblaze.com/");
+    public void cart_page_should_be_displayed() {
+        Assert.assertTrue("Cart page is not displayed", cartPage.isCartPageDisplayed());
     }
 
     @When("user proceeds to checkout")
     public void user_proceeds_to_checkout() {
-        WebElement placeOrderButton = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//button[contains(text(),'Place Order')]")));
-        placeOrderButton.click();
+        cartPage.clickPlaceOrder();
     }
 
     @When("user enters payment details and confirms purchase")
-    public void user_enters_payment_details_and_confirms_purchase() {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("orderModal")));
-
-        // Isi data checkout
-        driver.findElement(By.id("name")).sendKeys("John Doe");
-        driver.findElement(By.id("country")).sendKeys("Indonesia");
-        driver.findElement(By.id("city")).sendKeys("Jakarta");
-        driver.findElement(By.id("card")).sendKeys("4111 1111 1111 1111");
-        driver.findElement(By.id("month")).sendKeys("12");
-        driver.findElement(By.id("year")).sendKeys("2025");
-
-        // Klik tombol "Purchase"
-        WebElement purchaseButton = driver.findElement(By.xpath("//button[contains(text(),'Purchase')]"));
-        purchaseButton.click();
+    public void user_enters_payment_details_and_confirms() {
+        cartPage.enterCheckoutDetails("Test User", "Indonesia", "1234567890");
+        cartPage.confirmPurchase();
     }
 
     @Then("user should see a confirmation message")
-    public void user_should_see_a_confirmation_message() {
-        WebElement confirmationMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//h2[contains(text(),'Thank you for your purchase!')]")));
-        assertTrue("Purchase confirmation message not displayed", confirmationMessage.isDisplayed());
+    public void user_should_see_confirmation_message() {
+        Assert.assertTrue("Confirmation message is not displayed", cartPage.isConfirmationMessageDisplayed());
     }
 }

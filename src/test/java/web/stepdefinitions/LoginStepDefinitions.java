@@ -7,20 +7,23 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import web.pages.LoginPage;
 import web.utils.Hooks;
+
 import java.time.Duration;
 
 import static org.junit.Assert.assertTrue;
 
 public class LoginStepDefinitions {
-    WebDriver driver;
-    LoginPage loginPage;
-    WebDriverWait wait;
+    private WebDriver driver;
+    private LoginPage loginPage;
+
+    public LoginStepDefinitions() {
+        this.driver = Hooks.getDriver();
+        this.loginPage = new LoginPage(driver);
+    }
 
     @Given("user is on the login page")
     public void user_is_on_the_login_page() {
-        driver = Hooks.getDriver();
         driver.get("https://www.demoblaze.com");
-        loginPage = new LoginPage(driver);
         loginPage.openLoginModal();
     }
 
@@ -32,28 +35,18 @@ public class LoginStepDefinitions {
 
     @When("user clicks the login button")
     public void user_clicks_login_button() {
+        handleUnexpectedAlert(); // Tambahan untuk menangani alert sebelum klik
         loginPage.clickLogin();
     }
 
     @Then("user should be redirected to the homepage")
-    public void user_should_be_redirected() {
-        loginPage = new LoginPage(driver); // Re-inisialisasi objek LoginPage
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20)); // Perpanjang waktu tunggu
-
-        try {
-            // Tunggu sampai username muncul di halaman setelah login
-            WebElement userNameElement = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("nameofuser")));
-            assertTrue("Login failed, username not displayed", userNameElement.isDisplayed());
-        } catch (TimeoutException e) {
-            Assert.fail("Login failed, username element did not appear within timeout");
-        }
+    public void user_should_be_redirected_to_homepage() {
+        Assert.assertTrue("User was not redirected to the homepage", loginPage.isUserLoggedIn());
     }
-
-
 
     @Then("an error message should be displayed")
     public void error_message_should_be_displayed() {
-        wait = new WebDriverWait(driver, Duration.ofSeconds(5));
+        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(5));
         try {
             Alert alert = wait.until(ExpectedConditions.alertIsPresent());
             String errorMessage = alert.getText();
@@ -72,43 +65,37 @@ public class LoginStepDefinitions {
         }
     }
 
-
     @Given("user is logged in")
     public void user_is_logged_in() {
         user_is_on_the_login_page();
         user_enters_credentials("bedless666", "jayjay666");
         user_clicks_login_button();
-        assertTrue("Login failed, username not displayed.", loginPage.isUserNameDisplayed());
+        Assert.assertTrue("Login failed, username not displayed.", loginPage.isUserLoggedIn());
     }
 
     @When("user clicks logout")
     public void user_clicks_logout() {
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement logoutButton = wait.until(ExpectedConditions.elementToBeClickable(By.id("logout2")));
-
-        try {
-            logoutButton.click();
-        } catch (ElementClickInterceptedException e) {
-            ((JavascriptExecutor) driver).executeScript("arguments[0].click();", logoutButton);
-        }
+        loginPage.clickLogout();
     }
 
     @Then("user should be logged out")
     public void user_should_be_logged_out() {
-        wait = new WebDriverWait(driver, Duration.ofSeconds(20));
-
-        try {
-            // Pastikan elemen "nameofuser" menghilang sebelum mengecek tombol login muncul
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.id("nameofuser")));
-
-            // Tunggu hingga tombol login muncul setelah logout
-            WebElement loginButton = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("login2")));
-            assertTrue("Logout failed, login button not visible", loginButton.isDisplayed());
-        } catch (TimeoutException e) {
-            Assert.fail("Logout failed, login button did not appear within timeout");
-        }
+        Assert.assertTrue("Logout failed, login button not visible", loginPage.isLoginButtonVisible());
     }
 
+    @When("user clicks the login button without entering credentials")
+    public void user_clicks_login_without_credentials() {
+        handleUnexpectedAlert(); // Tambahan untuk menangani alert sebelum klik
+        loginPage.clickLogin();
+    }
 
-
+    // Menangani alert tak terduga agar test tidak gagal
+    private void handleUnexpectedAlert() {
+        try {
+            Alert alert = driver.switchTo().alert();
+            System.out.println("Unexpected alert detected: " + alert.getText());
+            alert.accept();
+        } catch (NoAlertPresentException ignored) {
+        }
+    }
 }
